@@ -1388,6 +1388,12 @@ Saves to a temp file and puts the filename in the kill ring."
   :ensure t 
   :hook (flycheck-mode . flycheck-popup-tip-mode)))
 
+;; Ivy auto-complete
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :hook (after-init . ivy-mode))
+
 ;; Store customizations in a separate file
 (setq custom-file "~/.emacs.d/.customizations.el")
 (load custom-file t)
