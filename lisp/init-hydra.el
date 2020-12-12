@@ -1,8 +1,4 @@
 ;;; init-hydra.el --- hydra tweaks -*- lexical-binding: t -*-
-
-;;; Commentary:
-;;
-
 ;;; Code:
 
 (use-package hydra

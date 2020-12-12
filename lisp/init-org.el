@@ -1,138 +1,4 @@
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives
-              '("org" . "http://orgmode.org/elpa/") t)
-(package-initialize)
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package))
-
-;; Disable backup files
-(setq make-backup-files nil)
-;; Disable auto save files
-(setq auto-save-default nil)
-
-;; Web mode
-(use-package web-mode :ensure t
-  :config
-  (defun web-mode-customization ()
-    "Customization for web-mode."
-    (setq web-mode-js-indent-offset 2)
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-css-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-    (setq web-mode-enable-auto-pairing t)
-    (setq web-mode-enable-css-colorization t))
-  (add-hook 'web-mode-hook 'web-mode-customization)
-  ;; Javascript
-  (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
-  ;; Turn off auto saving because js build tools hate temp files
-  (add-hook 'web-mode-hook '(lambda () (setq auto-save-default nil)))
-  ;; HTML
-  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
-  ;; CSS
-  (add-to-list 'auto-mode-alist '("\\.css$" . web-mode)))
-
-(use-package typescript-mode :ensure t
-  :config
-  (setq typescript-indent-level 2)
-  (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
-  (add-hook 'typescript-mode-hook #'eglot-ensure))
-
-(use-package toml-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.toml$" . toml-mode)))
-
-(use-package rust-mode
-  :ensure t
-  :config
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-  (add-hook 'rust-mode-hook #'eglot-ensure))
-
-;; Python
-(use-package python-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode)))
-
-(use-package elpy
-  :ensure t
-  :config
-  (elpy-enable)
-  (setq elpy-rpc-backend "rope"))
-
-;; Ruby
-(use-package robe
-  :ensure t
-  :config
-  ;; Sane indenting
-  (setq ruby-deep-indent-paren nil)
-  ;; Don't auto add file encodings!!!
-  (setq ruby-insert-encoding-magic-comment nil)
-  (add-hook 'ruby-mode-hook 'robe-mode)
-  ;; Use specific rubocop
-  (defun use-custom-rubocop ()
-    (let* ((root (locate-dominating-file
-		  (or (buffer-file-name) default-directory)
-		  "scripts/bin/rubocop"))
-	   (rubocop (and root
-			 (expand-file-name "scripts/bin/rubocop"
-					   root))))
-      (when (and rubocop (file-executable-p rubocop))
-	(setq-local flycheck-ruby-rubocop-executable rubocop))))
-  (add-hook 'flycheck-mode-hook #'use-custom-rubocop))
-
-;; Sass-mode
-(use-package sass-mode
-  :ensure t
-  :config (setq sass-tab-width 2))
-
-;; Processing mode
-(use-package processing-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.pde$" . processing-mode))
-  (setq processing-location "~/Library/Processing"))
-
-;; Markdown
-(use-package markdown-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode)))
-
-;; Unity
-(use-package glsl-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.shader$" . glsl-mode)))
-
-;; Disable auto fill mode because it's annoying
-(auto-fill-mode -1)
-(remove-hook 'text-mode-hook #'turn-on-auto-fill)
-
-;; Auto refresh all buffers when files change ie git branch switching
-(global-auto-revert-mode t)
-
-(use-package clojure-mode :ensure t)
-
-;; Rainbow parantheses
-(use-package rainbow-delimiters
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-
-;; Use spaces instead of tabs when indenting
-(setq-default indent-tabs-mode nil)
+;; init-org.el
 
 ;; Org-mode
 
@@ -144,6 +10,72 @@
 ;; Without this, use-package will try to require org and succeed.
 (eval-when-compile
   (require 'cl))
+
+;; Misc settings
+; (setq org-directory "~/Org")
+; (setq org-default-notes-file "~/Org/notes/inbox.org")
+; (setq org-export-with-sub-superscripts nil)
+; (setq org-log-reschedule (quote time))
+; (add-hook 'org-mode-hook 'org-indent-mode)
+
+; ;; Set todo keywords
+; (setq org-todo-keywords
+;       (quote ((sequence "TODO(t)" "STARTED(s)" "MAYBE(m)" "WAITING(w@/!)" "BLOCKED(b@/!)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
+;               (sequence "PROJ(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
+;               )))
+
+; (setq org-todo-keyword-faces
+;       '(("TODO" . "#008891")
+;         ("DONE" . "#bbbbbb")
+;         ("STARTED" . "#ff9642")
+;         ("MAYBE" . "#cdc9c3")
+;         ("WAITING" . "#9088d4")
+;         ("BLOCKED" . "#d7385e")
+;         ("PROJ" . "#7579e7")
+;         ))
+
+; ;; Image
+; (setq org-image-actual-width '(650))
+
+; ;; Block tasks when have not done subtasks
+; (setq org-enforce-todo-dependencies t)
+
+; ;; Block tasks when have not done checkobx
+; (setq org-enforce-todo-checkbox-dependencies t)
+
+; ;; Using unique ID's for links in Org-mode
+; (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+;       org-clone-delete-id t)
+
+; ;; org-agenda-files
+; (setq org-agenda-files '(
+;                          "~/Org/inbox.org"
+;                          "~/Org/inbox_beorg.org"
+;                          "~/Org/inbox_alfred.org"
+;                          "~/Org/todo.org"
+;                          "~/Org/project.org"
+;                          ))
+
+; ;; Org agenda misc settings
+; (setq org-agenda-span '1)
+; (setq org-agenda-start-on-weekday nil)
+; (setq org-agenda-start-day "0d")
+; (setq org-log-into-drawer t)
+; (setq org-agenda-archives-mode t)
+; (setq org-agenda-time-grid
+;       (quote
+;        ((daily today remove-match)
+;         (0800 1000 1200 1400 1600 1800 2000 2200)
+;         "......" "----------------")))
+
+; ;; Log done date
+; (setq org-log-done t)
+
+; ;; Non-nil means switching todo states with S-cursor counts as state change.
+; (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+; ;; Warning 30 days before deadline
+; (setq org-deadline-warning-days 7)
 
 (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 ;; Second, trick emacs into forgetting about the fact that org is
@@ -242,13 +174,13 @@
     (goto-char (point-min))
     (while (re-search-forward tag nil t)
       (add-text-properties (match-beginning 0) (point-at-eol)
-			   `(face (:foreground ,col)))))
+         `(face (:foreground ,col)))))
 
   (add-hook 'org-finalize-agenda-hook
-	    (lambda ()
-	      (save-excursion
-		(color-org-header "notes:"  "#66D9EF")
-		(color-org-header "refile:" "#F92672"))))
+      (lambda ()
+        (save-excursion
+    (color-org-header "notes:"  "#66D9EF")
+    (color-org-header "refile:" "#F92672"))))
 
   ;; Use longtable as the default table style when exporting
   (setq org-latex-default-table-environment "longtable")
@@ -262,11 +194,11 @@
     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
 
   (add-hook 'org-mode-hook
-	    (lambda ()
-	      (make-variable-buffer-local 'yas/trigger-key)
-	      (setq yas/trigger-key [tab])
-	      (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-	      (define-key yas/keymap [tab] 'yas/next-field)))
+      (lambda ()
+        (make-variable-buffer-local 'yas/trigger-key)
+        (setq yas/trigger-key [tab])
+        (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+        (define-key yas/keymap [tab] 'yas/next-field)))
 
   (add-hook 'org-mode-hook (lambda ()
                              (make-variable-buffer-local 'visual-line-mode)
@@ -283,8 +215,8 @@
 
   ;; Agenda
   (setq org-agenda-text-search-extra-files
-	'(agenda-archives
-	  "~/Org/notes.org_archive"))
+  '(agenda-archives
+    "~/Org/notes.org_archive"))
   (define-key global-map (kbd "C-c a") 'org-agenda)
   (define-key global-map (kbd "C-c C-a") 'org-agenda)
 
@@ -311,14 +243,14 @@
   ;; Allow the creation of parent headings when refiling
   (setq org-refile-allow-creating-parent-nodes t)
   (setq org-capture-templates
-	(quote (("t" "To Do" entry (file "~/Org/refile.org")
-		 "* TODO %?\n%U" :clock-in t :clock-resume t)
-		("n" "Note" entry (file "~/Org/refile.org")
-		 "* %? %T :note:\n%U\n%a\n" :clock-in t :clock-resume t)
-		("m" "Meeting" entry (file "~/Org/refile.org")
-		 "* Meeting w/%? %T :meeting:\n%U" :clock-in t :clock-resume t)
-		("i" "Interview" entry (file "~/Org/refile.org")
-		 "* Interview w/%? %T :interview:\n%U" :clock-in t :clock-resume t))))
+  (quote (("t" "To Do" entry (file "~/Org/refile.org")
+     "* TODO %?\n%U" :clock-in t :clock-resume t)
+    ("n" "Note" entry (file "~/Org/refile.org")
+     "* %? %T :note:\n%U\n%a\n" :clock-in t :clock-resume t)
+    ("m" "Meeting" entry (file "~/Org/refile.org")
+     "* Meeting w/%? %T :meeting:\n%U" :clock-in t :clock-resume t)
+    ("i" "Interview" entry (file "~/Org/refile.org")
+     "* Interview w/%? %T :interview:\n%U" :clock-in t :clock-resume t))))
 
   ;; Auto mark parent todos as done if childrend are done
   (defun org-summary-todo (n-done n-not-done)
@@ -328,24 +260,24 @@
 
   ;; Refile
 
-					; Targets include this file and any file contributing to the agenda -
-                                        ; up to 9 levels deep
+  ; Targets include this file and any file contributing to the agenda -
+  ; up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
-				   (org-agenda-files :maxlevel . 9))))
+           (org-agenda-files :maxlevel . 9))))
 
-					; Use full outline paths for refile targets - we file directly with
-                                        ; IDO
+  ; Use full outline paths for refile targets - we file directly with
+  ; IDO
   (setq org-refile-use-outline-path t)
 
-                                        ; Targets complete directly with IDO
+  ; Targets complete directly with IDO
   (setq org-outline-path-complete-in-steps nil)
 
-                                        ; Allow refile to create parent tasks with confirmation
+  ; Allow refile to create parent tasks with confirmation
   (setq org-refile-allow-creating-parent-nodes (quote confirm))
 
-                                        ; Use IDO for both buffer and file completion and ido-everywhere to t
+  ; Use IDO for both buffer and file completion and ido-everywhere to t
   (setq org-completion-use-ido t)
-                                        ; Use the current window for indirect buffer display
+  ; Use the current window for indirect buffer display
   (setq org-indirect-buffer-display 'current-window)
 
 ;;;; Refile settings
@@ -357,26 +289,34 @@
   ;; Don't prompt for confirmation when exporting babel blocks
   (setq org-confirm-babel-evaluate nil))
 
+
 ;; Babel setup
-(use-package ob-python
-  :defer t
-  :commands (org-babel-execute:python)
-  :config
-  (setq org-babel-python-command "python3"))
+; (use-package ob-python
+;   :defer t
+;   :commands (org-babel-execute:python)
+;   :config
+;   (setq org-babel-python-command "python3"))
 
-(use-package ob-shell
-  :defer t
-  :commands
-  (org-babel-execute:sh
-   org-babel-expand-body:sh
+; (use-package ob-shell
+;   :defer t
+;   :commands
+;   (org-babel-execute:sh
+;    org-babel-expand-body:sh
 
-   org-babel-execute:bash
-   org-babel-expand-body:bash))
+;    org-babel-execute:bash
+;    org-babel-expand-body:bash))
 
-(use-package htmlize :ensure t)
+(use-package htmlize 
+  :ensure t)
 
 ;; Org export
-(use-package ox-hugo :ensure t :after ox)
+(use-package ox-reveal 
+  :ensure t)
+(use-package ox-jira 
+  :ensure t)
+(use-package ox-hugo 
+  :ensure t 
+  :after ox)
 
 ;; Heavily modified based on https://github.com/novoid/title-capitalization.el/blob/master/title-capitalization.el
 (defun title-capitalization (str)
@@ -386,14 +326,14 @@
     (insert str)
     (let* ((beg (point-min))
            (end (point-max))
-	   ;; Basic list of words which don't get capitalized according to simplified rules
-	   ;; http://karl-voit.at/2015/05/25/elisp-title-capitalization/
+     ;; Basic list of words which don't get capitalized according to simplified rules
+     ;; http://karl-voit.at/2015/05/25/elisp-title-capitalization/
            (do-not-capitalize-basic-words '("a" "ago" "an" "and" "as" "at" "but" "by" "for"
                                             "from" "in" "into" "it" "next" "nor" "of" "off"
                                             "on" "onto" "or" "over" "past" "so" "the" "till"
                                             "to" "up" "yet"
                                             "n" "t" "es" "s"))
-	   ;; If user has defined 'my-do-not-capitalize-words, append to basic list
+     ;; If user has defined 'my-do-not-capitalize-words, append to basic list
            (do-not-capitalize-words (if (boundp 'my-do-not-capitalize-words)
                                         (append do-not-capitalize-basic-words my-do-not-capitalize-words )
                                       do-not-capitalize-basic-words)))
@@ -436,11 +376,28 @@
 
     (buffer-string)))
 
+;; Hacks
+;; 让中文也可以不加空格就使用行内格式
+(setcar (nthcdr 0 org-emphasis-regexp-components) " \t('\"{[:nonascii:]")
+(setcar (nthcdr 1 org-emphasis-regexp-components) "- \t.,:!?;'\")}\\[[:nonascii:]")
+(org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+(org-element-update-syntax)
+;; 规定上下标必须加 {}，否则中文使用下划线时它会以为是两个连着的下标
+(setq org-use-sub-superscripts "{}")
+
+;; Capture images
+(use-package org-download
+  :init
+  (setq org-download-heading-lvl nil)
+  (setq org-download-image-dir "~/Desktop/shotcuts")
+  (setq org-download-image-org-width 400)
+  (setq org-download-image-html-width 400))
+
 ;; Org roam
 ;; These are specified so they can be dynamically configured
 ;; by calling emacs in batch mode in a CI context
 (setq org-roam-notes-path "~/Org/notes")
-(setq org-roam-publish-path "~/Projects/zettel")
+(setq org-roam-publish-path "~/Org/notes_roam")
 
 (use-package org-roam
   :ensure t
@@ -584,14 +541,14 @@
 
   :config
   (setq org-roam-capture-templates
-	(quote (("d" "Default" plain (function org-roam--capture-get-point)
+  (quote (("d" "Default" plain (function org-roam--capture-get-point)
                  "%?"
                  :file-name "%(format-time-string \"%Y-%m-%d--%H-%M-%SZ--${slug}\" (current-time) t)"
                  :head "#+TITLE: ${title}\n#+DATE: %<%Y-%m-%d>\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n\n"
                  :unnarrowed t))))
 
   (setq org-roam-dailies-capture-templates
-	(quote (("d" "Default" plain (function org-roam--capture-get-point)
+  (quote (("d" "Default" plain (function org-roam--capture-get-point)
                  "%?"
                  :file-name "%(format-time-string \"%Y-%m-%d--%H-%M-%SZ--journal\" (current-time) t)"
                  :head "#+TITLE: Journal %<%Y-%m-%d>\n#+DATE: %<%Y-%m-%d>\n#+ROAM_ALIAS:\n#+ROAM_TAGS: private journal\n\n"
@@ -606,11 +563,9 @@
       (writeroom-mode)
       (scroll-up-command 4)))
 
-;; Json mode
-(use-package json-mode
+(use-package company-org-roam
   :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
-  (add-hook 'json-mode 'flymake-json-load))
+  (push 'company-org-roam company-backends))
 
-(provide 'export)
+(provide 'init-org)
